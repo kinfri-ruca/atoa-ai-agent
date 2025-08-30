@@ -1,0 +1,31 @@
+[
+  {
+    "id": "GDT1bYkNPd019zPPF8rB",
+    "ATPT_OFCDC_SC_CODE": "E10",
+    "ATPT_OFCDC_SC_NM": "인천광역시교육청",
+    "ADMST_ZONE_NM": "미추홀구",
+    "ACA_INSTI_SC_NM": "교습소",
+    "ACA_ASNUM": "6016",
+    "ACA_NM": "휘가로음악교습소",
+    "ESTBL_YMD": "20050411",
+    "REG_YMD": "20050411",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "        ",
+    "CAA_END_YMD": "99991231",
+    "TOFOR_SMTOT": 28,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 6,
+    "REALM_SC_NM": "예능(대)",
+    "LE_ORD_NM": "예능(중)",
+    "LE_CRSE_LIST_NM": "피아노1",
+    "LE_CRSE_NM": "음악",
+    "PSNBY_THCC_CNTNT": "피아노1:120000, 피아노2:140000, 피아노3:150000, 피아노4:160000, 바이올린1:120000, 바이올린2:140000, 바이올린3:150000, 바이올린4:160000, 첼로1:120000, 첼로2:140000, 첼로3:150000, 첼로4:160000",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "인천광역시 남구 장천로112번길 4",
+    "FA_RDNDA": ", 3층 (숭의동)",
+    "FA_RDNZC": "402812",
+    "FA_TELNO": "032-863-6821",
+    "LOAD_DTM": "20240303",
+    "district_area": "인천광역시 남구"
+  }
+]

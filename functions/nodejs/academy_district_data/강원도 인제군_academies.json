@@ -1,0 +1,31 @@
+[
+  {
+    "id": "OtR08Gw9HW5LcolQ7t6Z",
+    "ATPT_OFCDC_SC_CODE": "K10",
+    "ATPT_OFCDC_SC_NM": "강원특별자치도교육청",
+    "ADMST_ZONE_NM": "인제군",
+    "ACA_INSTI_SC_NM": "교습소",
+    "ACA_ASNUM": "10229",
+    "ACA_NM": "열린음악교습소",
+    "ESTBL_YMD": "20231005",
+    "REG_YMD": "20101018",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "20241201",
+    "CAA_END_YMD": "20251031",
+    "TOFOR_SMTOT": 72,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 5,
+    "REALM_SC_NM": "예능(대)",
+    "LE_ORD_NM": "예능(중)",
+    "LE_CRSE_LIST_NM": "피아노(바이엘)",
+    "LE_CRSE_NM": "음악",
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "강원도 인제군 인제읍 인제로 167",
+    "FA_RDNDA": "(인제읍)",
+    "FA_RDNZC": "24625",
+    "FA_TELNO": null,
+    "LOAD_DTM": "20250413",
+    "district_area": "강원도 인제군"
+  }
+]

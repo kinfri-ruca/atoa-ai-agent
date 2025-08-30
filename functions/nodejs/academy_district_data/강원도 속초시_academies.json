@@ -1,0 +1,31 @@
+[
+  {
+    "id": "LTM4p9IIhY4FDPMpvXDW",
+    "ATPT_OFCDC_SC_CODE": "K10",
+    "ATPT_OFCDC_SC_NM": "강원특별자치도교육청",
+    "ADMST_ZONE_NM": "속초시",
+    "ACA_INSTI_SC_NM": "학원",
+    "ACA_ASNUM": "1000001788",
+    "ACA_NM": "유미미용전문학원",
+    "ESTBL_YMD": "20020901",
+    "REG_YMD": "20020901",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "        ",
+    "CAA_END_YMD": "99991231",
+    "TOFOR_SMTOT": 30,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 120,
+    "REALM_SC_NM": "직업기술",
+    "LE_ORD_NM": "산업응용기술",
+    "LE_CRSE_LIST_NM": "이.미용",
+    "LE_CRSE_NM": "이·미용",
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "N",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "강원도 속초시 중앙로 64",
+    "FA_RDNDA": "(교동)",
+    "FA_RDNZC": "24836",
+    "FA_TELNO": "033-635-5049",
+    "LOAD_DTM": "20241201",
+    "district_area": "강원도 속초시"
+  }
+]

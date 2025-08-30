@@ -1,0 +1,31 @@
+[
+  {
+    "id": "dtiKc3TZ2lqP2d09MKNH",
+    "ATPT_OFCDC_SC_CODE": "P10",
+    "ATPT_OFCDC_SC_NM": "전북특별자치도교육청",
+    "ADMST_ZONE_NM": "김제시",
+    "ACA_INSTI_SC_NM": "학원",
+    "ACA_ASNUM": "3000011639",
+    "ACA_NM": "조이아트스쿨",
+    "ESTBL_YMD": "20140401",
+    "REG_YMD": "20140327",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "20230417",
+    "CAA_END_YMD": "20230630",
+    "TOFOR_SMTOT": 50,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 30,
+    "REALM_SC_NM": "예능(대)",
+    "LE_ORD_NM": "예능(중)",
+    "LE_CRSE_LIST_NM": null,
+    "LE_CRSE_NM": "미술",
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "전라북도 김제시 동서로 215",
+    "FA_RDNDA": "(요촌동)",
+    "FA_RDNZC": "54391",
+    "FA_TELNO": null,
+    "LOAD_DTM": "20250112",
+    "district_area": "전라북도 김제시"
+  }
+]

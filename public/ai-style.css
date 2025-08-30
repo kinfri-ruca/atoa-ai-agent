@@ -1,0 +1,130 @@
+/* ai-style.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f9;
+    margin: 0;
+    padding: 0;
+}
+
+#recommendation-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    height: 100%; /* 🚩 높이를 100%로 설정 */
+    display: flex; /* 🚩 flexbox 레이아웃 적용 */
+    flex-direction: column; /* 🚩 요소를 수직으로 배치 */
+}
+
+
+header {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+    color: #32c4a9;
+}
+
+header p {
+    color: #555;
+}
+
+main {
+    padding-top: 2rem;
+    flex-grow: 1; /* 🚩 남은 공간을 모두 채우도록 설정 */
+    overflow-y: auto; /* 🚩 넘치는 내용에 대해 스크롤 활성화 */
+}
+
+
+section {
+    margin-bottom: 3rem;
+}
+
+h2 {
+    border-bottom: 2px solid #32c4a9;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.academy-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.academy-card {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.academy-card:hover {
+    transform: translateY(-5px);
+}
+
+.academy-card h3 {
+    color: #007BFF;
+    margin-top: 0;
+}
+
+.academy-card .rating {
+    font-weight: bold;
+    color: #f7b731;
+}
+
+.plan-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    line-height: 1.6;
+}
+
+.plan-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.plan-content li {
+    background-color: #e6f7ff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+.plan-content li::before {
+    content: "✓";
+    position: absolute;
+    left: 1rem;
+    color: #32c4a9;
+    font-weight: bold;
+}
+
+/* 🚩 모바일 반응형 스타일 */
+@media (max-width: 768px) {
+    #recommendation-page {
+        padding: 1rem;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .academy-list {
+        grid-template-columns: 1fr;
+    }
+
+    .academy-card {
+        padding: 1rem;
+    }
+
+    .plan-content {
+        padding: 1rem;
+    }
+}

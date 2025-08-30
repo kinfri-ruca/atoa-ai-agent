@@ -1,0 +1,31 @@
+[
+  {
+    "id": "lfQ4Nvtjh4rC02brpbvn",
+    "ATPT_OFCDC_SC_CODE": "P10",
+    "ATPT_OFCDC_SC_NM": "전북특별자치도교육청",
+    "ADMST_ZONE_NM": "고창군",
+    "ACA_INSTI_SC_NM": "학원",
+    "ACA_ASNUM": "3000014664",
+    "ACA_NM": "리드인학원",
+    "ESTBL_YMD": "20200625",
+    "REG_YMD": "20200624",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "        ",
+    "CAA_END_YMD": "99991231",
+    "TOFOR_SMTOT": 56,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 15,
+    "REALM_SC_NM": "입시.검정 및 보습",
+    "LE_ORD_NM": null,
+    "LE_CRSE_LIST_NM": "보습,",
+    "LE_CRSE_NM": null,
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "전라북도 고창군 고창읍 중앙로 269",
+    "FA_RDNDA": ", 2층 (고창읍)",
+    "FA_RDNZC": "56428",
+    "FA_TELNO": "010-5756-1144",
+    "LOAD_DTM": "20250427",
+    "district_area": "전라북도 고창군"
+  }
+]

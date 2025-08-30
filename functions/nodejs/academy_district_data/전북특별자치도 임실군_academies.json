@@ -1,0 +1,31 @@
+[
+  {
+    "id": "z2WZoHBZfBMKI6lTkqw4",
+    "ATPT_OFCDC_SC_CODE": "P10",
+    "ATPT_OFCDC_SC_NM": "전북특별자치도교육청",
+    "ADMST_ZONE_NM": "임실군",
+    "ACA_INSTI_SC_NM": "학원",
+    "ACA_ASNUM": "3000017936",
+    "ACA_NM": "영어식당 학원",
+    "ESTBL_YMD": "20230828",
+    "REG_YMD": "20230828",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "        ",
+    "CAA_END_YMD": "        ",
+    "TOFOR_SMTOT": 0,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 0,
+    "REALM_SC_NM": "입시.검정 및 보습",
+    "LE_ORD_NM": "보통교과",
+    "LE_CRSE_LIST_NM": "보습",
+    "LE_CRSE_NM": "보습",
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "전북특별자치도 임실군 임실읍 봉황로 11",
+    "FA_RDNDA": "(임실읍 이도리 202, 2층)",
+    "FA_RDNZC": "55930",
+    "FA_TELNO": "010-2108-5808",
+    "LOAD_DTM": "20240324",
+    "district_area": "전북특별자치도 임실군"
+  }
+]

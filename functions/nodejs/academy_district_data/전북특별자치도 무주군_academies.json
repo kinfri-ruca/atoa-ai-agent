@@ -1,0 +1,31 @@
+[
+  {
+    "id": "6BsV1GPvRo4oJ6UWu3hS",
+    "ATPT_OFCDC_SC_CODE": "P10",
+    "ATPT_OFCDC_SC_NM": "전북특별자치도교육청",
+    "ADMST_ZONE_NM": "무주군",
+    "ACA_INSTI_SC_NM": "학원",
+    "ACA_ASNUM": "3000018236",
+    "ACA_NM": "셀라음악학원",
+    "ESTBL_YMD": "20250305",
+    "REG_YMD": "20250305",
+    "REG_STTUS_NM": "개원",
+    "CAA_BEGIN_YMD": "        ",
+    "CAA_END_YMD": "        ",
+    "TOFOR_SMTOT": 0,
+    "DTM_RCPTN_ABLTY_NMPR_SMTOT": 0,
+    "REALM_SC_NM": "예능(대)",
+    "LE_ORD_NM": null,
+    "LE_CRSE_LIST_NM": null,
+    "LE_CRSE_NM": null,
+    "PSNBY_THCC_CNTNT": " ",
+    "THCC_OTHBC_YN": "Y",
+    "BRHS_ACA_YN": "N",
+    "FA_RDNMA": "전북특별자치도 무주군 무주읍 단천로5길 10",
+    "FA_RDNDA": "2층",
+    "FA_RDNZC": "55518",
+    "FA_TELNO": "010-4862-6715",
+    "LOAD_DTM": "20250309",
+    "district_area": "전북특별자치도 무주군"
+  }
+]
