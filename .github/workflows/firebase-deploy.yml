@@ -1,0 +1,32 @@
+name: Deploy to Firebase Functions
+
+on:
+  push:
+    branches:
+      - main # main 브랜치에 푸시될 때 워크플로우 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # 워크플로우를 실행할 운영체제 환경
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 # 깃허브 리포지토리 코드 가져오기
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Node.js 버전 설정
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools # Firebase CLI 설치
+
+      - name: Install Project Dependencies
+        run: |
+          cd functions # functions 디렉토리로 이동
+          npm install # 패키지 의존성 설치
+
+      - name: Deploy Firebase Functions
+        run: firebase deploy --only functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # 깃허브 시크릿에 저장된 토큰 사용
