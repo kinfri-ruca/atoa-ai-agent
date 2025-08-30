@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Node.js Dependencies
         run: |
-          cd functions
+          cd functions/nodejs
           npm install
 
       - name: Set up Python
@@ -36,7 +36,7 @@ jobs:
         
       - name: Install Python Dependencies
         run: |
-          cd functions/py_function_directory # 파이썬 함수가 있는 디렉토리로 이동
+          cd functions/python # 파이썬 함수가 있는 디렉토리로 이동
           ./venv/bin/pip install -r requirements.txt # 가상 환경에 의존성 설치
           
       - name: Deploy Firebase 
