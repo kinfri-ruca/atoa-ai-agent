@@ -3,12 +3,18 @@ const admin = require('firebase-admin');
 
 // 서비스 계정 키 파일을 가져옵니다.
 // 이 파일은 Firebase 콘솔 > 프로젝트 설정 > 서비스 계정에서 생성할 수 있습니다.
-const serviceAccount = require('./atoa-ai-agent-firebase-adminsdk-fbsvc-9d912f96dd.json'); // 파일 경로를 실제 경로로 수정하세요.
+//const serviceAccount = require('./atoa-ai-agent-firebase-adminsdk-fbsvc-9d912f96dd.json'); // 파일 경로를 실제 경로로 수정하세요.
+
+// 수정된 코드 (환경 변수 사용)
+admin.initializeApp({
+  credential: admin.credential.applicationDefault()
+});
+
 
 // Firebase Admin SDK를 초기화합니다.
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+// admin.initializeApp({
+//  credential: admin.credential.cert(serviceAccount)
+// });
 
 // Firestore 인스턴스를 가져옵니다.
 const db = admin.firestore();
