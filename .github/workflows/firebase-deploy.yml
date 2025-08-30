@@ -26,7 +26,7 @@ jobs:
           cd functions # functions 디렉토리로 이동
           npm install # 패키지 의존성 설치
 
-      - name: Deploy Firebase Functions
-        run: firebase deploy --only functions
+      - name: Deploy Firebase
+        run: firebase deploy --project atoa-ai-agent
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # 깃허브 시크릿에 저장된 토큰 사용
