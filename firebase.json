@@ -38,6 +38,10 @@
       {
         "source": "/api/reviews",
         "function": "getReviews"
+      },
+      {
+        "source": "/api/**",
+        "function": "app"
       }
     ]
   },

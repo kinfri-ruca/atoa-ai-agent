@@ -4,7 +4,7 @@
 const KAKAO_MAP_KEY = 'e5f5b4a70e19433ba3b5a0b8bb9ed7ef';
 
 // Firebase Functions API URL: 배포 후 Firebase 콘솔에서 실제 URL로 변경해야 합니다.
-const API_BASE_URL = 'https://asia-northeast3-atoa-review-maching.cloudfunctions.net/app';
+const API_BASE_URL = 'https://dikovina.online';
 
 let map;
 let markers = [];
