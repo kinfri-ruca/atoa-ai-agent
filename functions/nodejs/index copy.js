@@ -10,8 +10,8 @@ admin.initializeApp();
 const db = admin.firestore();
 
 const app = express();
-//const allAcademiesRouter = require('./allAcademies'); // 이 라인은 이제 필요 없습니다.
-//const filteredAcademiesRouter = require('./filteredAcademies'); // 이 라인은 이제 필요 없습니다.
+//const allAcademiesRouter = require('./allAcademies'); // 새 모듈 불러오기
+//const filteredAcademiesRouter = require('./filteredAcademies'); // 평판점수가 있는것만 불러오기
 
 app.use((req, res, next) => {
     res.set("Access-Control-Allow-Origin", "https://dikovina.online");
@@ -47,7 +47,7 @@ app.get('/api/courses', async (req, res) => {
     }
 });
 
-// 🚩 학원 정보 조회 API 엔드포인트 (지오해시 기반 로직 + 평판 데이터 병합)
+// 🚩 학원 정보 조회 API 엔드포인트 (지오해시 기반 로직)
 app.get('/api/academies', async (req, res) => {
     try {
         const { keyword, course, neLat, neLng, swLat, swLng } = req.query;
@@ -111,49 +111,7 @@ app.get('/api/academies', async (req, res) => {
                 return true;
             });
 
-            // 🚩 평판 데이터 병합 로직 추가
-            const reputationsRef = db.collection('academy_reputations');
-            const reputedAcademiesMap = {};
-            const reputationPromises = [];
-            
-            // 필터링된 학원 이름 배열 생성 (중복 제거)
-            const filteredAcademyNames = [...new Set(filteredAcademies.map(a => a.ACA_NM))].filter(Boolean);
-
-            // Firestore 'in' 쿼리 제한(최대 10개)에 맞춰 배치 처리
-            const batchSize = 10;
-            for (let i = 0; i < filteredAcademyNames.length; i += batchSize) {
-                const batchNames = filteredAcademyNames.slice(i, i + batchSize);
-                const querySnapshot = reputationsRef.where('academy_name', 'in', batchNames).get();
-                reputationPromises.push(querySnapshot);
-            }
-
-            const reputationSnapshots = await Promise.all(reputationPromises);
-
-            reputationSnapshots.forEach(snap => {
-                snap.forEach(doc => {
-                    const academyName = doc.data().academy_name;
-                    if (academyName && academyName.trim() !== '') {
-                        const normalizedName = academyName.trim().toLowerCase();
-                        reputedAcademiesMap[normalizedName] = doc.data();
-                    }
-                });
-            });
-
-            // 평판 데이터 병합
-            academies = filteredAcademies.map(academy => {
-                const academyName = academy.ACA_NM;
-                if (academyName) {
-                    const normalizedName = academyName.trim().toLowerCase();
-                    if (reputedAcademiesMap[normalizedName]) {
-                        return {
-                            ...academy,
-                            reputationData: reputedAcademiesMap[normalizedName]
-                        };
-                    }
-                }
-                return academy;
-            });
-            
+            academies = filteredAcademies;
         } else {
             // 🚩 지도 경계가 유효하지 않을 경우, 빈 배열을 반환하여 메모리 초과 방지
             return res.status(200).json([]);
@@ -167,7 +125,7 @@ app.get('/api/academies', async (req, res) => {
     }
 });
 
-// 이 라인들은 더 이상 필요 없습니다.
-// app.use('/api/academies', allAcademiesRouter); 
+app.use('/api/academies', allAcademiesRouter);
+//app.use('/api/filtered-academies', filteredAcademiesRouter); // 평판점수있는 것만 연결
 
 exports.app = onRequest({ region: 'asia-northeast3' }, app);

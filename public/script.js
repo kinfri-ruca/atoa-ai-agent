@@ -131,6 +131,11 @@ async function fetchAndDisplayAcademies(neLat, neLng, swLat, swLng) {
                     map: map
                 });
 
+                // 🚩 평판 데이터 유무에 따라 투명도 설정
+                // academy.reputationData 객체가 존재하면 투명도 1(완전 불투명), 없으면 0.5(반투명)
+                const opacity = academy.reputationData ? 1.0 : 0.25;
+                marker.setOpacity(opacity);
+
                 marker.academyData = academy;
 
                 kakao.maps.event.addListener(marker, 'click', function() {
@@ -169,11 +174,21 @@ function displayAcademyDetail(academy) {
     detailAddress.textContent = academy.FA_RDNMA;
     detailPhone.textContent = academy.FA_TELNO;
     detailCourse.textContent = academy.LE_CRSE_NM;
-    // 🚩 위도, 경도 값 표시
     detailLat.textContent = academy.lat || '정보 없음';
     detailLng.textContent = academy.lng || '정보 없음';
-    // 🚩 AI 평판 지수 고정값 표시
-    detailAIScore.textContent = '95/100 (개발 중)';
+
+    // 🚩 ATOA-AI 평판지수에 실제 점수 표시 로직 추가
+    if (academy.reputationData && academy.reputationData.reputation_score_100) {
+        const score = parseFloat(academy.reputationData.reputation_score_100);
+        detailAIScore.textContent = `${score.toFixed(2)} / 100`;
+        // 평판 점수가 있는 경우 더 선명하게 표시하기 위해 투명도를 1.0으로 설정
+        academyDetail.style.opacity = 1.0; 
+    } else {
+        // 평판 데이터가 없는 경우
+        detailAIScore.textContent = '정보 없음';
+        // 평판 정보가 없는 경우 팝업창을 반투명하게 표시
+        academyDetail.style.opacity = 0.75;
+    }
     
     academyDetail.classList.add('visible');
     academyDetail.classList.remove('hidden');
