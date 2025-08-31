@@ -6,7 +6,7 @@ const admin = require('firebase-admin');
 
 const db = admin.firestore();
 
-// 🚩 모든 학원 데이터를 가져와 평판 데이터를 병합하고 그룹화하는 API
+// 🚩 모든 학원 데이터를 가져와 평판 데이터를 병합하는 API
 router.get('/', async (req, res) => {
     try {
         const academiesRef = db.collection('academies');
@@ -45,37 +45,11 @@ router.get('/', async (req, res) => {
             return academy; // 평판 데이터가 없으면 기존 데이터 그대로 반환
         });
 
-        // ⭐ 4. 동일한 위치의 학원들을 그룹화합니다.
-        const groupedAcademiesMap = new Map();
-        mergedAcademies.forEach(academy => {
-            const key = `${academy.lat},${academy.lng}`;
-            if (!groupedAcademiesMap.has(key)) {
-                groupedAcademiesMap.set(key, []);
-            }
-            groupedAcademiesMap.get(key).push(academy);
-        });
-
-        const finalAcademies = [];
-        for (const [key, group] of groupedAcademiesMap.entries()) {
-            if (group.length > 1) {
-                // 학원이 2개 이상이면 그룹화된 데이터로 처리
-                finalAcademies.push({
-                    lat: group[0].lat,
-                    lng: group[0].lng,
-                    isGrouped: true,
-                    groupedData: group
-                });
-            } else {
-                // 학원이 1개이면 그대로 추가
-                finalAcademies.push(group[0]);
-            }
-        }
-        
-        res.status(200).json(finalAcademies);
+        res.status(200).json(mergedAcademies);
 
     } catch (error) {
         console.error("Error fetching all academies with reputation:", error);
-        res.status(500).send("Error fetching all academies");
+        res.status(500).send("Error fetching all academies with reputation.");
     }
 });
 

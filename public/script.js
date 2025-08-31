@@ -126,25 +126,53 @@ async function fetchAndDisplayAcademies(neLat, neLng, swLat, swLng) {
 
         academies.forEach(academy => {
             if (academy.lat && academy.lng) {
+                // 기본 마커 이미지는 카카오맵의 기본 마커를 사용합니다.
+                const defaultImageSrc = './icons8-location-96.png';
+                let markerImage;
+                let opacity;
+
+                // ⭐ 그룹화된 마커인지 여부를 확인
+                const isGrouped = academy.isGrouped;
+                
+                if (isGrouped) {
+                    // 그룹화된 마커일 경우, 이미지를 더 크게 만듭니다.
+                    const defaultImageSrc = './icons9-96.png';
+                    const groupedImageSize = new kakao.maps.Size(46, 50);
+                    markerImage = new kakao.maps.MarkerImage(defaultImageSrc, groupedImageSize);
+                    opacity = 0.9;
+                } else {
+                    // 단일 마커일 경우, 평판 데이터 유무에 따라 크기를 조절합니다.
+                    const currentImageSize = academy.reputationData ? new kakao.maps.Size(46, 50) : new kakao.maps.Size(36, 40);
+                    markerImage = new kakao.maps.MarkerImage(defaultImageSrc, currentImageSize);
+                    
+                    // 평판 데이터 유무에 따라 투명도 설정
+                    opacity = academy.reputationData ? 1.0 : 0.5;
+                }
+                
                 const marker = new kakao.maps.Marker({
                     position: new kakao.maps.LatLng(academy.lat, academy.lng),
-                    map: map
+                    map: map,
+                    image: markerImage, // 마커 생성 시 이미지를 항상 명시합니다.
+                    opacity: opacity
                 });
-
-                // 🚩 평판 데이터 유무에 따라 투명도 설정
-                // academy.reputationData 객체가 존재하면 투명도 1(완전 불투명), 없으면 0.5(반투명)
-                const opacity = academy.reputationData ? 1.0 : 0.25;
-                marker.setOpacity(opacity);
-
+                
                 marker.academyData = academy;
 
+                // ⭐ 마커 클릭 이벤트 리스너
                 kakao.maps.event.addListener(marker, 'click', function() {
-                    displayAcademyDetail(this.academyData);
+                    if (this.academyData.isGrouped) {
+                        // console.log(`Grouped marker clicked with data:`, this.academyData.groupedData);
+                        displayGroupedAcademiesPopup(this.academyData.groupedData);
+                    } else {
+                        // console.log(`Single marker clicked with data:`, this.academyData);
+                        displayAcademyDetail(this.academyData);
+                    }
                 });
 
                 markers.push(marker);
             }
         });
+
     } catch (error) {
         console.error("API Fetch Error:", error);
         showPopupMessage(`API 호출에 실패했습니다. 백엔드 서버 상태를 확인하세요. 오류: ${error.message}`);
@@ -152,6 +180,47 @@ async function fetchAndDisplayAcademies(neLat, neLng, swLat, swLng) {
         // 🚩 검색이 성공하든 실패하든, 버튼 활성화 상태 해제
         if (searchButton) searchButton.classList.remove('active');
     }
+}
+
+// 🚩 그룹화된 학원 목록을 팝업에 표시하는 함수
+function displayGroupedAcademiesPopup(academies) {
+    const popup = document.getElementById('grouped-academies-popup');
+    const listContainer = document.getElementById('grouped-academies-list');
+    
+    if (!popup || !listContainer) {
+        console.error("Grouped academies popup elements not found.");
+        return;
+    }
+
+    listContainer.innerHTML = ''; // 기존 목록 초기화
+
+    // 각 학원 정보를 목록에 추가
+    academies.forEach(academy => {
+        const academyItem = document.createElement('div');
+        academyItem.classList.add('academy-item');
+        
+        // 평판 점수가 있으면 강조하고, 없으면 반투명하게 표시
+        const hasReputation = academy.reputationData;
+        if (hasReputation) {
+            academyItem.classList.add('reputation-academy');
+        }
+
+        academyItem.innerHTML = `
+            <h3>${academy.ACA_NM}</h3>
+            ${hasReputation ? `<p><strong>평판 점수:</strong> ${academy.reputationData.reputation_score_100.toFixed(2)}</p>` : `<p>평판 점수 없음</p>`}
+        `;
+
+        // ⭐ 각 항목 클릭 시 상세 정보 팝업
+        academyItem.addEventListener('click', () => {
+            displayAcademyDetail(academy);
+            popup.classList.add('hidden'); // 그룹 팝업 닫기
+        });
+
+        listContainer.appendChild(academyItem);
+    });
+
+    // 팝업 표시
+    popup.classList.remove('hidden');
 }
 
 // 학원 상세 정보 팝업을 표시하는 함수
@@ -171,45 +240,70 @@ function displayAcademyDetail(academy) {
     }
 
     detailName.textContent = academy.ACA_NM;
+    //detailAddress.textContent = academy.ADDR || '정보 없음'; // FA_RDNMA 대신 ADDR 사용
     detailAddress.textContent = academy.FA_RDNMA;
     detailPhone.textContent = academy.FA_TELNO;
     detailCourse.textContent = academy.LE_CRSE_NM;
     detailLat.textContent = academy.lat || '정보 없음';
     detailLng.textContent = academy.lng || '정보 없음';
 
-    // 🚩 ATOA-AI 평판지수에 실제 점수 표시 로직 추가
     if (academy.reputationData && academy.reputationData.reputation_score_100) {
         const score = parseFloat(academy.reputationData.reputation_score_100);
         detailAIScore.textContent = `${score.toFixed(2)} / 100`;
-        // 평판 점수가 있는 경우 더 선명하게 표시하기 위해 투명도를 1.0으로 설정
         academyDetail.style.opacity = 1.0; 
     } else {
-        // 평판 데이터가 없는 경우
         detailAIScore.textContent = '정보 없음';
-        // 평판 정보가 없는 경우 팝업창을 반투명하게 표시
         academyDetail.style.opacity = 0.75;
     }
 
-    // 🚩 학원 이름 클릭 시 새 탭에서 대시보드 페이지로 이동
     const academyName = academy.ACA_NM;
     detailName.textContent = academyName;
 
-    // 학원 이름이 유효한 경우에만 클릭 이벤트 추가
     if (academyName && academyName.trim() !== '') {
         detailName.style.cursor = 'pointer';
         detailName.onclick = () => {
-            // 새 탭에서 대시보드 페이지를 엽니다.
             window.open(`dashboard.html?name=${encodeURIComponent(academyName)}`, '_blank');
         };
     } else {
         detailName.style.cursor = 'default';
-        detailName.onclick = null; // 클릭 이벤트 제거
+        detailName.onclick = null;
     }
     
     academyDetail.classList.add('visible');
     academyDetail.classList.remove('hidden');
 }
 
+// 🚩 행정구역 검색 및 지도 이동 함수가 추가된 부분
+function searchAndMoveToDistrict() {
+    const districtInput = document.getElementById('district-input');
+    const districtSearchButton = document.getElementById('district-search-button');
+    
+    if (districtSearchButton) {
+        districtSearchButton.classList.add('active');
+    }
+
+    const districtName = districtInput.value.trim();
+
+    if (!districtName) {
+        showPopupMessage('행정구역명을 입력해 주세요.');
+        return;
+    }
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(districtName, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            map.setCenter(coords);
+            showPopupMessage(`${districtName}으로 지도를 이동합니다.`);
+        } else {
+            showPopupMessage('입력하신 지역을 찾을 수 없습니다. 정확한 행정구역명을 입력해 주세요.');
+        }
+        if (districtSearchButton) {
+            districtSearchButton.classList.remove('active');
+        }
+    });
+}
 
 // 전송 버튼 클릭 시 메시지를 채팅창에 추가하는 함수
 function sendMessage() {
@@ -275,12 +369,10 @@ async function fetchAIResponse(message) {
         const randomResponse = simulatedResponses[randomIndex];
         addAIMessage(randomResponse);
 
-        // AI 응답이 끝난 후 버튼 표시
         const recommendButtonContainer = document.getElementById('recommend-button-container');
         if (recommendButtonContainer) {
-            // Append to chatWindow instead of just showing it
             chatWindow.appendChild(recommendButtonContainer);
-            recommendButtonContainer.classList.remove('hidden'); // Ensure it's visible
+            recommendButtonContainer.classList.remove('hidden');
         }
         
     } catch (error) {
@@ -291,42 +383,6 @@ async function fetchAIResponse(message) {
         addAIMessage('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
 }
-
-// 🚩 행정구역 검색 및 지도 이동 함수가 추가된 부분
-function searchAndMoveToDistrict() {
-    const districtInput = document.getElementById('district-input');
-    const districtSearchButton = document.getElementById('district-search-button');
-    
-    // 🚩 지역 이동 시작 시 버튼 활성화
-    if (districtSearchButton) {
-        districtSearchButton.classList.add('active');
-    }
-
-    const districtName = districtInput.value.trim();
-
-    if (!districtName) {
-        showPopupMessage('행정구역명을 입력해 주세요.');
-        return;
-    }
-
-    // 카카오맵 Geocoder API 사용
-    const geocoder = new kakao.maps.services.Geocoder();
-
-    geocoder.addressSearch(districtName, function(result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-            map.setCenter(coords); // 지도의 중심을 이동
-            showPopupMessage(`${districtName}으로 지도를 이동합니다.`);
-        } else {
-            showPopupMessage('입력하신 지역을 찾을 수 없습니다. 정확한 행정구역명을 입력해 주세요.');
-        }
-        // 🚩 검색 완료 후 버튼 활성화 상태 해제
-        if (districtSearchButton) {
-            districtSearchButton.classList.remove('active');
-        }
-    });
-}
-
 
 // 카카오맵 API 로드 후 실행될 콜백 함수
 function initMap() {
@@ -352,6 +408,56 @@ function initMap() {
     fetchCourses();
 }
 
+// 🚩 그룹화된 학원 목록 팝업을 표시하는 함수 (수정)
+function displayGroupedAcademiesPopup(academies) {
+    console.log('Popup function called with data:', academies);
+    const popup = document.getElementById('grouped-academies-popup');
+    const listContainer = document.getElementById('grouped-academies-list');
+
+    if (!popup || !listContainer) {
+        console.error("Popup function cannot find required elements. Check 'grouped-academies-popup' and 'grouped-academies-list' IDs in index.html");
+        return;
+    }
+    
+    // 팝업이 나타나지 않는 문제를 해결하기 위해 display 속성을 직접 설정
+    popup.style.display = 'flex';
+    popup.classList.remove('hidden');
+
+    listContainer.innerHTML = ''; // 기존 목록 초기화
+
+    // 각 학원 정보를 목록에 추가
+    academies.forEach(academy => {
+        const academyItem = document.createElement('div');
+        academyItem.classList.add('academy-item');
+
+        const hasReputation = academy.reputationData;
+        if (hasReputation) {
+            academyItem.classList.add('reputation-academy');
+        }
+
+        academyItem.innerHTML = `
+            <h3>${academy.ACA_NM}</h3>
+            ${hasReputation ? `<p><strong>평판 점수:</strong> ${academy.reputationData.reputation_score_100.toFixed(2)}</p>` : `<p>평판 점수 없음</p>`}
+        `;
+
+        academyItem.addEventListener('click', () => {
+            displayAcademyDetail(academy);
+            popup.classList.add('hidden');
+        });
+
+        listContainer.appendChild(academyItem);
+    });
+
+    // 팝업 닫기 이벤트 리스너는 문서 로드 시 한 번만 설정
+    const closeButton = popup.querySelector('.close-button');
+    if (!closeButton.hasAttribute('data-listener-added')) {
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+        closeButton.setAttribute('data-listener-added', 'true');
+    }
+}
+
 // 모든 이벤트 리스너를 한 곳에 모아 관리
 document.addEventListener('DOMContentLoaded', function() {
     const aiButton = document.getElementById('ai-button');
@@ -364,11 +470,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendButton = document.getElementById('chat-send-button');
     const keywordButtons = document.querySelectorAll('.keyword-btn');
     const goToRecommendButton = document.getElementById('go-to-recommendation-button');
-    
-    // 🚩 행정구역 검색 버튼 이벤트 리스너를 위한 변수 추가
     const districtSearchButton = document.getElementById('district-search-button'); 
 
-    // 검색 버튼 이벤트 리스너
     if (searchButton) {
         searchButton.addEventListener('click', () => {
             const bounds = map.getBounds();
@@ -378,25 +481,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 🚩 행정구역 검색 버튼 이벤트 리스너가 추가된 부분
     if (districtSearchButton) {
         districtSearchButton.addEventListener('click', searchAndMoveToDistrict);
     }
 
-    // 🚩 지도 클릭 이벤트 리스너 추가
     if (map) {
         kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
-            // 🚩 검색 입력창의 포커스 제거
             const keywordInput = document.getElementById('keyword-input');
             const districtInput = document.getElementById('district-input');
-            const chatInput = document.getElementById('chat-input'); // 🚩 chat-input 요소 추가
+            const chatInput = document.getElementById('chat-input');
             keywordInput.blur();
             districtInput.blur();
-            chatInput.blur(); // 🚩 chat-input의 포커스 제거
+            chatInput.blur();
         });
     }
 
-    // 학원 상세 정보 닫기 버튼
     if (closeButton) {
         closeButton.addEventListener('click', function() {
             const academyDetail = document.getElementById('academy-detail');
@@ -404,14 +503,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // AI 버튼 클릭 시 팝업 열기
     if (aiButton) {
         aiButton.addEventListener('click', function() {
             aiPopup.classList.remove('hidden');
         });
     }
 
-    // AI 닫기 버튼 클릭 시 팝업 닫기
     if (aiCloseButton) {
         aiCloseButton.addEventListener('click', function() {
             aiPopup.classList.add('hidden');
@@ -420,12 +517,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 메시지 팝업 닫기 버튼
     if (messageCloseButton) {
         messageCloseButton.addEventListener('click', hidePopupMessage);
     }
     
-    // 키워드 버튼 클릭 이벤트 리스너
     keywordButtons.forEach(button => {
         button.addEventListener('click', function() {
             const keyword = button.dataset.keyword;
@@ -443,12 +538,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 전송 버튼 클릭
     if (chatSendButton) {
         chatSendButton.addEventListener('click', sendMessage);
     }
     
-    // 키보드 입력 이벤트 (Enter로 전송)
     if (chatInput) {
         chatInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -458,7 +551,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // AI 추천 결과 보러가기 버튼 이벤트 리스너
     if (goToRecommendButton) {
         goToRecommendButton.addEventListener('click', function() {
             window.location.href = 'recommendation.html';
@@ -466,5 +558,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 카카오맵 API가 로딩된 후 initMap 함수를 호출합니다.
 kakao.maps.load(initMap);

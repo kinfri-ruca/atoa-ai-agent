@@ -10,9 +10,9 @@ admin.initializeApp();
 const db = admin.firestore();
 
 const app = express();
-const reviewsRouter = require('./reviews'); // Make sure this line exists
-//const allAcademiesRouter = require('./allAcademies'); // 이 라인은 이제 필요 없습니다.
-//const filteredAcademiesRouter = require('./filteredAcademies'); // 이 라인은 이제 필요 없습니다.
+const reviewsRouter = require('./reviews'); 
+
+app.use(cors({ origin: true }));
 
 app.use((req, res, next) => {
     res.set("Access-Control-Allow-Origin", "https://dikovina.online");
@@ -26,8 +26,7 @@ app.use((req, res, next) => {
     }
 });
 
-app.use(cors({ origin: true }));
-
+// 🚩 /api/courses 엔드포인트
 app.get('/api/courses', async (req, res) => {
     try {
         const academiesRef = db.collection('academies');
@@ -48,128 +47,103 @@ app.get('/api/courses', async (req, res) => {
     }
 });
 
-// 🚩 학원 정보 조회 API 엔드포인트 (지오해시 기반 로직 + 평판 데이터 병합)
+// 🚩 /api/academies 엔드포인트 (통합된 로직)
 app.get('/api/academies', async (req, res) => {
     try {
         const { keyword, course, neLat, neLng, swLat, swLng } = req.query;
-        let academiesRef = db.collection('academies');
-        
-        const numNeLat = neLat ? parseFloat(neLat) : null;
-        const numNeLng = neLng ? parseFloat(neLng) : null;
-        const numSwLat = swLat ? parseFloat(swLat) : null;
-        const numSwLng = swLng ? parseFloat(swLng) : null;
-        
-        let academies = [];
 
-        // 🚩 지도 경계 좌표가 모두 유효할 경우에만 Geohash 기반 검색 사용
-        if (numNeLat && numNeLng && numSwLat && numSwLng) {
-            const centerLat = (numNeLat + numSwLat) / 2;
-            const centerLng = (numNeLng + numSwLng) / 2;
-            const distance = geofire.distanceBetween([numNeLat, numNeLng], [numSwLat, numSwLng]) / 2;
-            const radiusInM = distance * 1000;
-            const center = [centerLat, centerLng];
-            
-            const bounds = geofire.geohashQueryBounds(center, radiusInM);
-            const promises = [];
-            const limitPerBound = Math.ceil(1000 / bounds.length);
-
-            for (const b of bounds) {
-                const q = academiesRef.orderBy('geohash').startAt(b[0]).endAt(b[1]).limit(limitPerBound);
-                promises.push(q.get());
-            }
-
-            const snapshots = await Promise.all(promises);
-            const allAcademies = [];
-            for (const snap of snapshots) {
-                for (const doc of snap.docs) {
-                    allAcademies.push({ id: doc.id, ...doc.data() });
-                }
-            }
-
-            const filteredAcademies = allAcademies.filter(academy => {
-                const lat = academy.lat;
-                const lng = academy.lng;
-
-                if (!lat || !lng) return false;
-
-                const distanceInKm = geofire.distanceBetween([lat, lng], center);
-                if (distanceInKm * 1000 > radiusInM) {
-                    return false;
-                }
-
-                if (keyword) {
-                    if (!academy.ACA_NM || !academy.ACA_NM.toLowerCase().includes(keyword.toLowerCase())) {
-                        return false;
-                    }
-                }
-
-                if (course && course !== '') {
-                    if (academy.LE_CRSE_NM !== course) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-
-            // 🚩 평판 데이터 병합 로직 추가
-            const reputationsRef = db.collection('academy_reputations');
-            const reputedAcademiesMap = {};
-            const reputationPromises = [];
-            
-            // 필터링된 학원 이름 배열 생성 (중복 제거)
-            const filteredAcademyNames = [...new Set(filteredAcademies.map(a => a.ACA_NM))].filter(Boolean);
-
-            // Firestore 'in' 쿼리 제한(최대 10개)에 맞춰 배치 처리
-            const batchSize = 10;
-            for (let i = 0; i < filteredAcademyNames.length; i += batchSize) {
-                const batchNames = filteredAcademyNames.slice(i, i + batchSize);
-                const querySnapshot = reputationsRef.where('academy_name', 'in', batchNames).get();
-                reputationPromises.push(querySnapshot);
-            }
-
-            const reputationSnapshots = await Promise.all(reputationPromises);
-
-            reputationSnapshots.forEach(snap => {
-                snap.forEach(doc => {
-                    const academyName = doc.data().academy_name;
-                    if (academyName && academyName.trim() !== '') {
-                        const normalizedName = academyName.trim().toLowerCase();
-                        reputedAcademiesMap[normalizedName] = doc.data();
-                    }
-                });
-            });
-
-            // 평판 데이터 병합
-            academies = filteredAcademies.map(academy => {
-                const academyName = academy.ACA_NM;
-                if (academyName) {
-                    const normalizedName = academyName.trim().toLowerCase();
-                    if (reputedAcademiesMap[normalizedName]) {
-                        return {
-                            ...academy,
-                            reputationData: reputedAcademiesMap[normalizedName]
-                        };
-                    }
-                }
-                return academy;
-            });
-            
-        } else {
-            // 🚩 지도 경계가 유효하지 않을 경우, 빈 배열을 반환하여 메모리 초과 방지
-            return res.status(200).json([]);
+        // 경계 데이터 유효성 검사
+        if (!neLat || !neLng || !swLat || !swLng) {
+            return res.status(400).send("Invalid map bounds provided.");
         }
 
-        const limitedAcademies = academies.slice(0, 1000);
-        res.status(200).json(limitedAcademies);
+        const centerLat = (parseFloat(neLat) + parseFloat(swLat)) / 2;
+        const centerLng = (parseFloat(neLng) + parseFloat(swLng)) / 2;
+        const distance = geofire.distanceBetween([parseFloat(neLat), parseFloat(neLng)], [parseFloat(swLat), parseFloat(swLng)]) / 2;
+        const radiusInM = distance * 1000;
+        const center = [centerLat, centerLng];
+        
+        const academiesRef = db.collection('academies');
+        const reputationsRef = db.collection('academy_reputations');
+        
+        // 1. 학원 및 평판 데이터 모두 가져오기
+        const [academiesSnapshot, reputationsSnapshot] = await Promise.all([
+            academiesRef.get(),
+            reputationsRef.get()
+        ]);
+        
+        const allAcademies = academiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const reputedAcademiesMap = {};
+        reputationsSnapshot.forEach(doc => {
+            const academyName = doc.data().academy_name;
+            if (academyName && academyName.trim() !== '') {
+                reputedAcademiesMap[academyName.trim().toLowerCase()] = doc.data();
+            }
+        });
+
+        // 2. 평판 데이터 병합 및 검색 조건 필터링
+        const filteredAcademies = allAcademies.filter(academy => {
+            const lat = academy.lat;
+            const lng = academy.lng;
+            
+            if (!lat || !lng) return false;
+
+            const distanceInKm = geofire.distanceBetween([lat, lng], center);
+            if (distanceInKm * 1000 > radiusInM) return false;
+
+            if (keyword && (!academy.ACA_NM || !academy.ACA_NM.toLowerCase().includes(keyword.toLowerCase()))) {
+                return false;
+            }
+
+            if (course && course !== '' && academy.LE_CRSE_NM !== course) {
+                return false;
+            }
+
+            // 평판 데이터 병합
+            const academyName = academy.ACA_NM;
+            if (academyName) {
+                const normalizedName = academyName.trim().toLowerCase();
+                if (reputedAcademiesMap[normalizedName]) {
+                    academy.reputationData = reputedAcademiesMap[normalizedName];
+                }
+            }
+
+            return true;
+        });
+
+        // ⭐ 3. 동일한 위치의 학원들을 그룹화합니다.
+        const groupedAcademiesMap = new Map();
+        filteredAcademies.forEach(academy => {
+            const key = `${academy.lat},${academy.lng}`;
+            if (!groupedAcademiesMap.has(key)) {
+                groupedAcademiesMap.set(key, []);
+            }
+            groupedAcademiesMap.get(key).push(academy);
+        });
+
+        const finalAcademies = [];
+        for (const [key, group] of groupedAcademiesMap.entries()) {
+            if (group.length > 1) {
+                const representativeAcademy = group.find(a => a.reputationData) || group[0];
+                finalAcademies.push({
+                    ...representativeAcademy,
+                    isGrouped: true,
+                    groupCount: group.length,
+                    groupedData: group
+                });
+            } else {
+                finalAcademies.push(group[0]);
+            }
+        }
+        
+        res.status(200).json(finalAcademies.slice(0, 1000));
+
     } catch (error) {
         console.error("Error fetching academies:", error);
         res.status(500).send("Error fetching academies");
     }
 });
-
-
     
-    app.use('/api/reviews', reviewsRouter); // Make sure this line exists 
+app.use('/api/reviews', reviewsRouter); 
 
-    exports.app = onRequest({ region: 'asia-northeast3' }, app);
+exports.app = onRequest({ region: 'asia-northeast3' }, app);
