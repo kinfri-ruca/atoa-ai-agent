@@ -136,7 +136,7 @@ app.get('/api/academies', async (req, res) => {
             }
         }
         
-        res.status(200).json(finalAcademies.slice(0, 1000));
+        res.status(200).json(finalAcademies.slice(0, 500));
 
     } catch (error) {
         console.error("Error fetching academies:", error);

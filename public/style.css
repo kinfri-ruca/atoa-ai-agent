@@ -221,6 +221,24 @@ body {
     line-height: 1.2;
 }
 
+#top10-button {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background-color: #007bff; /* 파란색 배경 */
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 99;
+}
+
 #ai-popup {
     position: absolute;
     bottom: 90px;
@@ -249,6 +267,11 @@ body {
     border-bottom: 1px solid #eee;
 }
 
+
+
+#top10-button:hover {
+    transform: scale(1.05);
+}
 /* New header section for filter buttons */
 #ai-popup-header {
     padding: 15px;
@@ -515,6 +538,11 @@ body {
    
       #ai-button {
           bottom: 10px;
+          right: 10px;
+      }
+
+      #top10-button {
+          bottom: 70 px;
           right: 10px;
       }
 

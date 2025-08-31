@@ -472,6 +472,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const goToRecommendButton = document.getElementById('go-to-recommendation-button');
     const districtSearchButton = document.getElementById('district-search-button'); 
 
+    // Top 10 버튼 이벤트 리스너
+    const top10Button = document.getElementById('top10-button');
+        if (top10Button) {
+            top10Button.addEventListener('click', function() {
+                window.open('top10.html', '_blank');
+            });
+        }
+
     if (searchButton) {
         searchButton.addEventListener('click', () => {
             const bounds = map.getBounds();
