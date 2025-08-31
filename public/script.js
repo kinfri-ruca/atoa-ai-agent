@@ -189,6 +189,22 @@ function displayAcademyDetail(academy) {
         // 평판 정보가 없는 경우 팝업창을 반투명하게 표시
         academyDetail.style.opacity = 0.75;
     }
+
+    // 🚩 학원 이름 클릭 시 새 탭에서 대시보드 페이지로 이동
+    const academyName = academy.ACA_NM;
+    detailName.textContent = academyName;
+
+    // 학원 이름이 유효한 경우에만 클릭 이벤트 추가
+    if (academyName && academyName.trim() !== '') {
+        detailName.style.cursor = 'pointer';
+        detailName.onclick = () => {
+            // 새 탭에서 대시보드 페이지를 엽니다.
+            window.open(`dashboard.html?name=${encodeURIComponent(academyName)}`, '_blank');
+        };
+    } else {
+        detailName.style.cursor = 'default';
+        detailName.onclick = null; // 클릭 이벤트 제거
+    }
     
     academyDetail.classList.add('visible');
     academyDetail.classList.remove('hidden');

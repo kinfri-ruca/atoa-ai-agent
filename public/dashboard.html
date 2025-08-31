@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학원 평가 대시보드</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .review-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .review-item p {
+            margin: 0 0 5px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .review-item span {
+            font-size: 14px;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span id="academy-name-title"></span> 평가 대시보드</h1>
+        <div id="reviews-container">
+            <h2>리뷰</h2>
+            <div class="loading-spinner" id="loading-spinner"></div>
+            <div id="review-list">
+                </div>
+            <p id="no-reviews-message" style="display: none; text-align: center; color: #888;">리뷰가 없습니다.</p>
+        </div>
+    </div>
+    <script>
+        // API 기본 URL을 현재 도메인으로 설정하여 CORS 오류를 방지합니다.
+        const API_BASE_URL = 'https://dikovina.online';
+
+        // 리뷰 데이터를 가져와 표시하는 함수
+        async function fetchReviews(academyName) {
+            const reviewListContainer = document.getElementById('review-list');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const noReviewsMessage = document.getElementById('no-reviews-message');
+            
+            loadingSpinner.style.display = 'block';
+            noReviewsMessage.style.display = 'none';
+            reviewListContainer.innerHTML = '';
+
+            try {
+                // API 호출 시 올바른 파라미터명(academy_name)을 사용합니다.
+                const url = `${API_BASE_URL}/api/reviews?academy_name=${encodeURIComponent(academyName)}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`API 호출 실패: ${response.status} ${response.statusText}`);
+                }
+                
+                const reviews = await response.json();
+                
+                if (reviews.length === 0) {
+                    noReviewsMessage.style.display = 'block';
+                    return;
+                }
+                
+                reviews.forEach(review => {
+                    const reviewDiv = document.createElement('div');
+                    reviewDiv.classList.add('review-item');
+                    reviewDiv.innerHTML = `
+                        <p><strong>${review.title || '제목 없음'}</strong></p>
+                        <p class="review-text">${review.text || '내용 없음'}</p>
+                        <div class="review-meta">
+                            <span><strong>평점:</strong> ${review.rating || '?'}/5</span>
+                            <span><strong>작성일:</strong> ${review.date_created || '알 수 없음'}</span>
+                        </div>
+                    `;
+                    reviewListContainer.appendChild(reviewDiv);
+                });
+
+            } catch (error) {
+                console.error("리뷰 호출 중 오류:", error);
+                reviewListContainer.innerHTML = `<p style="color:red; text-align:center;">리뷰를 불러오는 데 실패했습니다: ${error.message}</p>`;
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // 페이지 로드 시 URL에서 학원 이름을 가져와 리뷰를 불러옵니다.
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const academyName = urlParams.get('name');
+
+            if (academyName) {
+                document.getElementById('academy-name-title').textContent = academyName;
+                fetchReviews(academyName);
+            } else {
+                document.getElementById('academy-name-title').textContent = '학원 정보를 찾을 수 없습니다.';
+            }
+        });
+    </script>
+</body>
+</html>

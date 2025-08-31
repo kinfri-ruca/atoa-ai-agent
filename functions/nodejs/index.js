@@ -10,6 +10,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 const app = express();
+const reviewsRouter = require('./reviews'); // Make sure this line exists
 //const allAcademiesRouter = require('./allAcademies'); // 이 라인은 이제 필요 없습니다.
 //const filteredAcademiesRouter = require('./filteredAcademies'); // 이 라인은 이제 필요 없습니다.
 
@@ -167,7 +168,8 @@ app.get('/api/academies', async (req, res) => {
     }
 });
 
-// 이 라인들은 더 이상 필요 없습니다.
-// app.use('/api/academies', allAcademiesRouter); 
 
-exports.app = onRequest({ region: 'asia-northeast3' }, app);
+    
+    app.use('/api/reviews', reviewsRouter); // Make sure this line exists 
+
+    exports.app = onRequest({ region: 'asia-northeast3' }, app);

@@ -37,7 +37,7 @@
       },
       {
         "source": "/api/reviews",
-        "function": "getReviews"
+        "function": "app"
       },
       {
         "source": "/api/**",
